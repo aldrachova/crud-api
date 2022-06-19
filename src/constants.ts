@@ -27,4 +27,5 @@ export enum Message {
   USERNAME_MISSING = 'Required field username is missing',
   AGE_MISSING = 'Required field age is missing',
   HOBBIES_MISSING = 'Required field hobbies is missing',
+  ROUTE_NOT_FOUND = 'Route Not Found',
 }

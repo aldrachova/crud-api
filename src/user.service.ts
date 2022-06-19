@@ -88,4 +88,24 @@ const updateUser = async (request: IncomingMessage, response: ServerResponse, id
   }
 };
 
-export const userService = { getUsers, getUserById, createUser, updateUser };
+// DELETE api/users/:userId
+const deleteUser = (response: ServerResponse, id: string) => {
+  try {
+    if (!isValidId(id)) {
+      handleErrorResponse(response, StatusCode.BAD_REQUEST, Message.NOT_VALID_ID);
+    } else {
+      const user = userRepository.getById(id);
+      if (!user) {
+        handleErrorResponse(response, StatusCode.NOT_FOUND, Message.NOT_FOUND);
+      } else {
+        userRepository.deleteById(id);
+        response.statusCode = StatusCode.NO_CONTENT;
+        response.end();
+      }
+    }
+  } catch (error) {
+    handleErrorResponse(response, StatusCode.SERVER_ERROR, Message.SERVER_ERROR);
+  }
+};
+
+export const userService = { getUsers, getUserById, createUser, updateUser, deleteUser };
