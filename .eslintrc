@@ -1,0 +1,21 @@
+{
+  "root": true,
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "project": "./tsconfig.json"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "plugin:import/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "airbnb-typescript/base"
+  ],
+  "ignorePatterns": ["node_modules/", "dist/"]
+}
