@@ -1,8 +1,24 @@
-import { ServerResponse } from 'http';
+import { IncomingMessage, ServerResponse } from 'http';
 import { Message, StatusCode } from './constants';
 import { handleErrorResponse, handleResponse } from './response-handler';
 import { userRepository } from './user.repository';
 import { isValidId } from './user.validator';
+
+const getBodyData = async (request: IncomingMessage): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    try {
+      let data = '';
+      request.on('data', (chunk) => {
+        data += chunk.toString();
+      });
+      request.on('end', () => {
+        resolve(data);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
 // GET api/user
 const getUsers = (response: ServerResponse) => {
@@ -32,4 +48,24 @@ const getUserById = (response: ServerResponse, id: string) => {
   }
 };
 
-export const userService = { getUsers, getUserById };
+// POST api/users
+const createUser = async (request: IncomingMessage, response: ServerResponse) => {
+  try {
+    const bodyData = await getBodyData(request);
+    const { username, age, hobbies } = JSON.parse(bodyData);
+    if (!username) {
+      handleErrorResponse(response, StatusCode.BAD_REQUEST, Message.USERNAME_MISSING);
+    } else if (!age) {
+      handleErrorResponse(response, StatusCode.BAD_REQUEST, Message.AGE_MISSING);
+    } else if (!hobbies) {
+      handleErrorResponse(response, StatusCode.BAD_REQUEST, Message.HOBBIES_MISSING);
+    } else {
+      const newUser = userRepository.create(username, age, hobbies);
+      handleResponse(response, StatusCode.CREATED, newUser);
+    }
+  } catch (error) {
+    handleErrorResponse(response, StatusCode.SERVER_ERROR, Message.SERVER_ERROR);
+  }
+};
+
+export const userService = { getUsers, getUserById, createUser };
