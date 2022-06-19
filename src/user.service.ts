@@ -68,4 +68,24 @@ const createUser = async (request: IncomingMessage, response: ServerResponse) =>
   }
 };
 
-export const userService = { getUsers, getUserById, createUser };
+// PUT api/users/:userId
+const updateUser = async (request: IncomingMessage, response: ServerResponse, id: string) => {
+  try {
+    if (!isValidId(id)) {
+      handleErrorResponse(response, StatusCode.BAD_REQUEST, Message.NOT_VALID_ID);
+    } else {
+      const bodyData = await getBodyData(request);
+      const { username, age, hobbies } = JSON.parse(bodyData);
+      const updatedUser = userRepository.updateById(id, username, age, hobbies);
+      if (updatedUser) {
+        handleResponse(response, StatusCode.OK, updatedUser);
+      } else {
+        handleErrorResponse(response, StatusCode.NOT_FOUND, Message.NOT_FOUND);
+      }
+    }
+  } catch (error) {
+    handleErrorResponse(response, StatusCode.SERVER_ERROR, Message.SERVER_ERROR);
+  }
+};
+
+export const userService = { getUsers, getUserById, createUser, updateUser };

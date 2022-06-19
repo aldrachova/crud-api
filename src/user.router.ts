@@ -11,5 +11,8 @@ export const userRoutes = async (request: IncomingMessage, response: ServerRespo
     userService.getUserById(response, id);
   } else if (request.url === API_URL && request.method === Method.POST) {
     await userService.createUser(request, response);
+  } else if (request.url &&  request.url.match(URL_REGEXP) && request.method === Method.PUT) {
+    const id = request.url.split('/')[3];
+    userService.updateUser(request, response, id);
   }
 };
